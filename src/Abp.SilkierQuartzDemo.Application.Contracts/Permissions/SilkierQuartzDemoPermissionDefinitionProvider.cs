@@ -11,6 +11,8 @@ public class SilkierQuartzDemoPermissionDefinitionProvider : PermissionDefinitio
         var myGroup = context.AddGroup(SilkierQuartzDemoPermissions.GroupName);
         //Define your own permissions here. Example:
         //myGroup.AddPermission(SilkierQuartzDemoPermissions.MyPermission1, L("Permission:MyPermission1"));
+
+        myGroup.AddPermission("SilkierQuartz", L("Permission:SilkierQuartz"));
     }
 
     private static LocalizableString L(string name)

@@ -1,41 +1,40 @@
+using System;
 using System.IO;
+using Abp.SilkierQuartzDemo.EntityFrameworkCore;
+using Abp.SilkierQuartzDemo.Localization;
+using Abp.SilkierQuartzDemo.MultiTenancy;
+using Abp.SilkierQuartzDemo.Web.Menus;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Abp.SilkierQuartzDemo.EntityFrameworkCore;
-using Abp.SilkierQuartzDemo.Localization;
-using Abp.SilkierQuartzDemo.MultiTenancy;
-using Abp.SilkierQuartzDemo.Web.Menus;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
+using Quartz;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.AntiForgery;
 using Volo.Abp.AspNetCore.Mvc.Localization;
-using Volo.Abp.AspNetCore.Mvc.UI;
-using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
-using Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
-using Volo.Abp.FeatureManagement;
+using Volo.Abp.BackgroundJobs.Quartz;
+using Volo.Abp.BackgroundWorkers.Quartz;
 using Volo.Abp.Identity.Web;
-using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
-using Volo.Abp.PermissionManagement.Web;
+using Volo.Abp.Quartz;
 using Volo.Abp.SettingManagement.Web;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement.Web;
-using Volo.Abp.UI.Navigation.Urls;
-using Volo.Abp.UI;
 using Volo.Abp.UI.Navigation;
+using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
 
 namespace Abp.SilkierQuartzDemo.Web;
@@ -53,10 +52,14 @@ namespace Abp.SilkierQuartzDemo.Web;
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpSwashbuckleModule)
     )]
+[DependsOn(typeof(AbpBackgroundWorkersQuartzModule))]
+[DependsOn(typeof(AbpBackgroundJobsQuartzModule))]
 public class SilkierQuartzDemoWebModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
+        var configuration = context.Services.GetConfiguration();
+
         context.Services.PreConfigure<AbpMvcDataAnnotationsLocalizationOptions>(options =>
         {
             options.AddAssemblyResource(
@@ -78,6 +81,24 @@ public class SilkierQuartzDemoWebModule : AbpModule
                 options.UseAspNetCore();
             });
         });
+
+        PreConfigure<AbpQuartzOptions>(options =>
+        {
+            options.Configurator = configure =>
+            {
+                configure.UsePersistentStore(storeOptions =>
+                {
+                    storeOptions.UseProperties = true;
+                    storeOptions.UseJsonSerializer();
+                    storeOptions.UseSqlServer(configuration.GetConnectionString("Default")!);
+                    storeOptions.UseClustering(c =>
+                    {
+                        c.CheckinMisfireThreshold = TimeSpan.FromSeconds(20);
+                        c.CheckinInterval = TimeSpan.FromSeconds(10);
+                    });
+                });
+            };
+        });
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -93,6 +114,10 @@ public class SilkierQuartzDemoWebModule : AbpModule
         ConfigureNavigationServices();
         ConfigureAutoApiControllers();
         ConfigureSwaggerServices(context.Services);
+        Configure<AbpAntiForgeryOptions>(options =>
+        {
+            options.AutoValidateFilter = type => !type.FullName!.StartsWith("SilkierQuartz.Controllers");
+        });
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -210,6 +235,10 @@ public class SilkierQuartzDemoWebModule : AbpModule
         });
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();
-        app.UseConfiguredEndpoints();
+        app.UseAbpSilkierQuartz();
+        app.UseConfiguredEndpoints(endpoints =>
+        {
+            endpoints.MapAbpSilkierQuartz();
+        });
     }
 }
