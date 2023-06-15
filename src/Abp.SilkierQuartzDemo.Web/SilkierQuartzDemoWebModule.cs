@@ -3,6 +3,7 @@ using System.IO;
 using Abp.SilkierQuartzDemo.EntityFrameworkCore;
 using Abp.SilkierQuartzDemo.Localization;
 using Abp.SilkierQuartzDemo.MultiTenancy;
+using Abp.SilkierQuartzDemo.Quartz;
 using Abp.SilkierQuartzDemo.Web.Menus;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
 using Quartz;
+using Quartz.Plugins.RecentHistory;
+using Quartz.Util;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Mvc;
@@ -86,6 +89,8 @@ public class SilkierQuartzDemoWebModule : AbpModule
         {
             options.Configurator = configure =>
             {
+                configure.SetProperty("quartz.plugin.recentHistory.type", typeof(AbpExecutionHistoryPlugin).AssemblyQualifiedNameWithoutVersion());
+                configure.SetProperty("quartz.plugin.recentHistory.storeType", typeof(AbpExecutionHistoryStore).AssemblyQualifiedNameWithoutVersion());
                 configure.UsePersistentStore(storeOptions =>
                 {
                     storeOptions.UseProperties = true;

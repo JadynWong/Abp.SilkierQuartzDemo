@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Abp.SilkierQuartzDemo.Quartz;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
@@ -82,5 +84,29 @@ public class SilkierQuartzDemoDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
+
+        builder.Entity<QuartzExecutionHistory>(b =>
+        {
+            b.ToTable("QuartzExecutionHistories", SilkierQuartzDemoConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            /* Configure more properties here */
+            b.Property(x => x.FireInstanceId).HasMaxLength(200);
+            b.Property(x => x.SchedulerInstanceId).HasMaxLength(200);
+            b.Property(x => x.SchedulerName).HasMaxLength(200);
+            b.Property(x => x.Job).HasMaxLength(300);
+            b.Property(x => x.Trigger).HasMaxLength(300);
+
+            b.HasIndex(x => x.FireInstanceId);
+        });
+
+        builder.Entity<QuartzJobSummary>(b =>
+        {
+            b.ToTable("QuartzJobSummares", SilkierQuartzDemoConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            /* Configure more properties here */
+            b.Property(x => x.SchedulerName).HasMaxLength(200);
+        });
     }
 }

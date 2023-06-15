@@ -1,8 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using System.Threading.Tasks;
 using Abp.SilkierQuartzDemo.MultiTenancy;
+using Abp.SilkierQuartzDemo.Quartz;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Quartz;
+using Quartz.Plugins.RecentHistory;
+using Volo.Abp;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
+using Volo.Abp.BackgroundWorkers;
 using Volo.Abp.Emailing;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
@@ -64,5 +70,19 @@ public class SilkierQuartzDemoDomainModule : AbpModule
 #if DEBUG
         context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
 #endif
+    }
+
+    public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
+    {
+        var scheduler = context.ServiceProvider.GetRequiredService<IScheduler>();
+        var executionHistoryStore = context.ServiceProvider.GetRequiredService<AbpExecutionHistoryStore>();
+        scheduler.Context.SetExecutionHistoryStore(executionHistoryStore);
+    }
+
+    public override async Task OnApplicationInitializationAsync(ApplicationInitializationContext context)
+    {
+        await base.OnApplicationInitializationAsync(context);
+
+        await context.AddBackgroundWorkerAsync<ExecutionHistoryCleanBackgroundWorker>();
     }
 }
