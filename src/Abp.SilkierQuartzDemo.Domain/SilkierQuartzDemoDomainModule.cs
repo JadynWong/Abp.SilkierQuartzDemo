@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Threading.Tasks;
 using Abp.SilkierQuartzDemo.MultiTenancy;
 using Abp.SilkierQuartzDemo.Quartz;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.PermissionManagement.Identity;
 using Volo.Abp.PermissionManagement.OpenIddict;
+using Volo.Abp.Quartz;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
 
@@ -34,7 +36,8 @@ namespace Abp.SilkierQuartzDemo;
     typeof(AbpPermissionManagementDomainIdentityModule),
     typeof(AbpSettingManagementDomainModule),
     typeof(AbpTenantManagementDomainModule),
-    typeof(AbpEmailingModule)
+    typeof(AbpEmailingModule),
+    typeof(AbpQuartzModule)
 )]
 public class SilkierQuartzDemoDomainModule : AbpModule
 {
@@ -74,6 +77,7 @@ public class SilkierQuartzDemoDomainModule : AbpModule
 
     public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
     {
+        // TODO: Move this part to the library where the Quartz module resides.
         var scheduler = context.ServiceProvider.GetRequiredService<IScheduler>();
         var executionHistoryStore = context.ServiceProvider.GetRequiredService<AbpExecutionHistoryStore>();
         scheduler.Context.SetExecutionHistoryStore(executionHistoryStore);
