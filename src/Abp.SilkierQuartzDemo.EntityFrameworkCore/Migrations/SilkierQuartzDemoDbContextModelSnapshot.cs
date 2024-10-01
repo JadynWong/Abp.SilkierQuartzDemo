@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.OpenIddict.Applications;
 
 #nullable disable
 
@@ -33,8 +34,7 @@ namespace Abp.SilkierQuartzDemo.Migrations
                     b.Property<DateTime>("ActualFireTimeUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ExceptionMessage")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ExceptionMessage").HasColumnType("nvarchar(max)").HasColumnName("ExceptionMessage");
 
                     b.Property<DateTime?>("FinishedTimeUtc")
                         .HasColumnType("datetime2");
@@ -147,8 +147,7 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnType("nvarchar(64)")
                         .HasColumnName("CorrelationId");
 
-                    b.Property<string>("Exceptions")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Exceptions").HasColumnType("nvarchar(max)").HasColumnName("Exceptions");
 
                     b.Property<int>("ExecutionDuration")
                         .HasColumnType("int")
@@ -1077,8 +1076,7 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("TenantId");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Value").HasColumnType("nvarchar(max)").HasColumnName("Value");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -1194,25 +1192,11 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ClientId")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ClientSecret")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClientUri")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)")
                         .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<string>("ConsentType")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -1230,16 +1214,6 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("DisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DisplayNames")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1254,27 +1228,77 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<string>("LogoUri")
-                        .HasColumnType("nvarchar(max)");
+                    //b.Property<string>("Type")
+                    //    .HasMaxLength(50)
+                    //    .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Permissions")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ApplicationType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("PostLogoutRedirectUris")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("ClientId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Properties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RedirectUris")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Requirements")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
+                    b.Property<string>("ConsentType")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ClientType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ClientSecret");
+
+                    b.Property<string>("ClientUri")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ClientUri");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("DisplayName");
+
+                    b.Property<string>("DisplayNames")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("DisplayNames");
+
+                    b.Property<string>("JsonWebKeySet")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("JsonWebKeySet");
+
+                    b.Property<string>("LogoUri")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("LogoUri");
+
+                    b.Property<string>("Permissions")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Permissions");
+
+                    b.Property<string>("PostLogoutRedirectUris")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("PostLogoutRedirectUris");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Properties");
+
+                    b.Property<string>("RedirectUris")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("RedirectUris");
+
+                    b.Property<string>("Requirements")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Requirements");
+
+                    b.Property<string>("Settings")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Settings");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
 
                     b.HasKey("Id");
 
@@ -1298,9 +1322,6 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnType("nvarchar(40)")
                         .HasColumnName("ConcurrencyStamp");
 
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
                         .HasColumnName("CreationTime");
@@ -1317,10 +1338,6 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1335,11 +1352,8 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<string>("Properties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Scopes")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .HasMaxLength(50)
@@ -1352,6 +1366,18 @@ namespace Abp.SilkierQuartzDemo.Migrations
                     b.Property<string>("Type")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Scopes")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Scopes");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Properties");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
 
                     b.HasKey("Id");
 
@@ -1388,22 +1414,6 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Descriptions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DisplayNames")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1423,10 +1433,32 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Properties")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Properties");
 
                     b.Property<string>("Resources")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Resources");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("Descriptions")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Descriptions");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("DisplayName");
+
+                    b.Property<string>("DisplayNames")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("DisplayNames");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
 
                     b.HasKey("Id");
 
@@ -1494,10 +1526,12 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnName("LastModifierId");
 
                     b.Property<string>("Payload")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Payload");
 
                     b.Property<string>("Properties")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Properties");
 
                     b.Property<DateTime?>("RedemptionDate")
                         .HasColumnType("datetime2");
@@ -1726,6 +1760,11 @@ namespace Abp.SilkierQuartzDemo.Migrations
                         .HasColumnName("LastModifierId");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("NormalizedName")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");

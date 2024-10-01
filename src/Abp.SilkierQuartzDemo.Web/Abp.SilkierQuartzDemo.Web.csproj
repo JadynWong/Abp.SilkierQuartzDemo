@@ -3,7 +3,7 @@
   <Import Project="..\..\common.props" />
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RootNamespace>Abp.SilkierQuartzDemo.Web</RootNamespace>
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
@@ -32,29 +32,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
-    <PackageReference Include="Quartz.Serialization.Json" Version="3.4.0" />
-    <PackageReference Include="SilkierQuartz" Version="5.0.356" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.0.0" />
+    <PackageReference Include="Quartz" Version="3.7.0" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.7.0" />
+    <PackageReference Include="SilkierQuartz" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="2.2.*-*" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="3.3.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Abp.SilkierQuartzDemo.Application\Abp.SilkierQuartzDemo.Application.csproj" />
     <ProjectReference Include="..\Abp.SilkierQuartzDemo.HttpApi\Abp.SilkierQuartzDemo.HttpApi.csproj" />
     <ProjectReference Include="..\Abp.SilkierQuartzDemo.EntityFrameworkCore\Abp.SilkierQuartzDemo.EntityFrameworkCore.csproj" />
-    <PackageReference Include="Volo.Abp.Autofac" Version="7.2.2" />
-    <PackageReference Include="Volo.Abp.Swashbuckle" Version="7.2.2" />
-    <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="7.2.2" />
-    <PackageReference Include="Volo.Abp.Identity.Web" Version="7.2.2" />
-    <PackageReference Include="Volo.Abp.Account.Web.OpenIddict" Version="7.2.2" />
-    <PackageReference Include="Volo.Abp.BackgroundJobs.Quartz" Version="7.2.2" />
-    <PackageReference Include="Volo.Abp.BackgroundWorkers.Quartz" Version="7.2.2" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Web" Version="7.2.2" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Web" Version="7.2.2" />
+    <PackageReference Include="Volo.Abp.Autofac" Version="8.3.1" />
+    <PackageReference Include="Volo.Abp.Swashbuckle" Version="8.3.1" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="8.3.1" />
+    <PackageReference Include="Volo.Abp.Identity.Web" Version="8.3.1" />
+    <PackageReference Include="Volo.Abp.Account.Web.OpenIddict" Version="8.3.1" />
+    <PackageReference Include="Volo.Abp.Quartz" Version="8.3.1" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.Quartz" Version="8.3.1" />
+    <PackageReference Include="Volo.Abp.BackgroundWorkers.Quartz" Version="8.3.1" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Web" Version="8.3.1" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Web" Version="8.3.1" />
   </ItemGroup>
 
 </Project>
