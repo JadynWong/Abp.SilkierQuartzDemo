@@ -34,7 +34,7 @@ namespace Abp.SilkierQuartzDemo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "QuartzJobSummares",
+                name: "QuartzJobSummaries",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -44,7 +44,7 @@ namespace Abp.SilkierQuartzDemo.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuartzJobSummares", x => x.Id);
+                    table.PrimaryKey("PK_QuartzJobSummaries", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
@@ -60,7 +60,7 @@ namespace Abp.SilkierQuartzDemo.Migrations
                 name: "QuartzExecutionHistories");
 
             migrationBuilder.DropTable(
-                name: "QuartzJobSummares");
+                name: "QuartzJobSummaries");
         }
     }
 }

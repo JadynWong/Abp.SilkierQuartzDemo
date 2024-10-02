@@ -103,7 +103,7 @@ public class SilkierQuartzDemoDbContext :
 
         builder.Entity<QuartzJobSummary>(b =>
         {
-            b.ToTable("QuartzJobSummares", SilkierQuartzDemoConsts.DbSchema);
+            b.ToTable("QuartzJobSummaries", SilkierQuartzDemoConsts.DbSchema);
             b.ConfigureByConvention();
 
             /* Configure more properties here */

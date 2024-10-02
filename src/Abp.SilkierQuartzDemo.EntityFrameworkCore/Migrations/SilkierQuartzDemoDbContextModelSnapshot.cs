@@ -97,7 +97,7 @@ namespace Abp.SilkierQuartzDemo.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("QuartzJobSummares", (string)null);
+                    b.ToTable("QuartzJobSummaries", (string)null);
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
