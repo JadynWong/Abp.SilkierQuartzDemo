@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
 using Abp.SilkierQuartzDemo.MultiTenancy;
-using Abp.SilkierQuartzDemo.Quartz;
+using Abp.SilkierQuartzDemo.SilkierQuartz;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Quartz;

@@ -36,7 +36,7 @@
     <PackageReference Include="Serilog.Sinks.Async" Version="2.0.0" />
     <PackageReference Include="Quartz" Version="3.7.0" />
     <PackageReference Include="Quartz.Serialization.Json" Version="3.7.0" />
-    <PackageReference Include="SilkierQuartz" Version="8.0.0" />
+    <PackageReference Include="SilkierQuartz" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +47,7 @@
     <ProjectReference Include="..\Abp.SilkierQuartzDemo.Application\Abp.SilkierQuartzDemo.Application.csproj" />
     <ProjectReference Include="..\Abp.SilkierQuartzDemo.HttpApi\Abp.SilkierQuartzDemo.HttpApi.csproj" />
     <ProjectReference Include="..\Abp.SilkierQuartzDemo.EntityFrameworkCore\Abp.SilkierQuartzDemo.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Abp.SilkierQuartzDemo.SqlServer.EntityFrameworkCore\Abp.SilkierQuartzDemo.SqlServer.EntityFrameworkCore.csproj" />
     <PackageReference Include="Volo.Abp.Autofac" Version="8.3.1" />
     <PackageReference Include="Volo.Abp.Swashbuckle" Version="8.3.1" />
     <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="8.3.1" />

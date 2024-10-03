@@ -3,7 +3,8 @@ using System.IO;
 using Abp.SilkierQuartzDemo.EntityFrameworkCore;
 using Abp.SilkierQuartzDemo.Localization;
 using Abp.SilkierQuartzDemo.MultiTenancy;
-using Abp.SilkierQuartzDemo.Quartz;
+using Abp.SilkierQuartzDemo.SilkierQuartz;
+using Abp.SilkierQuartzDemo.SqlServer.EntityFrameworkCore;
 using Abp.SilkierQuartzDemo.Web.Menus;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
 using Quartz;
+using Quartz.Impl.AdoJobStore;
 using Quartz.Plugins.RecentHistory;
 using Quartz.Util;
 using Volo.Abp;
@@ -39,22 +41,22 @@ using Volo.Abp.TenantManagement.Web;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using static Quartz.SchedulerBuilder;
 
 namespace Abp.SilkierQuartzDemo.Web;
 
-[DependsOn(
-    typeof(SilkierQuartzDemoHttpApiModule),
-    typeof(SilkierQuartzDemoApplicationModule),
-    typeof(SilkierQuartzDemoEntityFrameworkCoreModule),
-    typeof(AbpAutofacModule),
-    typeof(AbpIdentityWebModule),
-    typeof(AbpSettingManagementWebModule),
-    typeof(AbpAccountWebOpenIddictModule),
-    typeof(AbpAspNetCoreMvcUiLeptonXLiteThemeModule),
-    typeof(AbpTenantManagementWebModule),
-    typeof(AbpAspNetCoreSerilogModule),
-    typeof(AbpSwashbuckleModule)
-    )]
+[DependsOn(typeof(SilkierQuartzDemoHttpApiModule))]
+[DependsOn(typeof(SilkierQuartzDemoApplicationModule))]
+[DependsOn(typeof(SilkierQuartzDemoEntityFrameworkCoreModule))] /* if you need work with postgre remark this line */
+//[DependsOn(typeof(SilkierQuartzDemoSqlServerEntityFrameworkCoreModule))] /* if you need work with sqlserver add this line*/
+[DependsOn(typeof(AbpAutofacModule))]
+[DependsOn(typeof(AbpIdentityWebModule))]
+[DependsOn(typeof(AbpSettingManagementWebModule))]
+[DependsOn(typeof(AbpAccountWebOpenIddictModule))]
+[DependsOn(typeof(AbpAspNetCoreMvcUiLeptonXLiteThemeModule))]
+[DependsOn(typeof(AbpTenantManagementWebModule))]
+[DependsOn(typeof(AbpAspNetCoreSerilogModule))]
+[DependsOn(typeof(AbpSwashbuckleModule))]
 [DependsOn(typeof(AbpBackgroundWorkersQuartzModule))]
 [DependsOn(typeof(AbpBackgroundJobsQuartzModule))]
 public class SilkierQuartzDemoWebModule : AbpModule
@@ -94,8 +96,15 @@ public class SilkierQuartzDemoWebModule : AbpModule
                 configure.UsePersistentStore(storeOptions =>
                 {
                     storeOptions.UseProperties = true;
-                    storeOptions.UseJsonSerializer();
-                    storeOptions.UseSqlServer(configuration.GetConnectionString("Default")!);
+                    storeOptions.UseNewtonsoftJsonSerializer();
+                    //storeOptions.UseSqlServer(configuration.GetConnectionString("SqlServer")!);
+                    storeOptions.UsePostgres(configurer =>
+                    {
+                        configurer.UseDriverDelegate<PostgreSQLDelegate>();;
+                        configurer.TablePrefix = "quartz.qrtz_";
+                        configurer.ConnectionString = configuration.GetConnectionString("Default")!;
+                        //configurer.ConnectionStringName = "Default";
+                    });
                     storeOptions.UseClustering(c =>
                     {
                         c.CheckinMisfireThreshold = TimeSpan.FromSeconds(20);
