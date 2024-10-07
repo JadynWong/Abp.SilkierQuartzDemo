@@ -29,12 +29,15 @@ public class Program
         try
         {
             Log.Information("Starting web host.");
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
                 .UseSerilog();
             await builder.AddApplicationAsync<SilkierQuartzDemoWebModule>();
             var app = builder.Build();
+            var config = builder.Configuration;
             await app.InitializeApplicationAsync();
             await app.RunAsync();
             return 0;
@@ -51,7 +54,7 @@ public class Program
         }
         finally
         {
-            Log.CloseAndFlush();
+            await Log.CloseAndFlushAsync();
         }
     }
 }

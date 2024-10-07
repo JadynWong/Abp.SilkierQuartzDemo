@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Quartz;
+using SilkierQuartz;
 using System;
 using Volo.Abp.Ui.Branding;
 
@@ -15,9 +16,9 @@ public static class AbpSilkierQuartzExtensions
 
     public static IApplicationBuilder UseAbpSilkierQuartz(
         this IApplicationBuilder app,
-        Action<SilkierQuartz.SilkierQuartzOptions>? actionOptions = null)
+        Action<SilkierQuartzOptions>? actionOptions = null)
     {
-        var options = new SilkierQuartz.SilkierQuartzOptions()
+        var options = new SilkierQuartzOptions()
         {
             Logo = app.ApplicationServices.GetRequiredService<IBrandingProvider>().LogoUrl ?? "Content/Images/logo.png",
             Scheduler = app.ApplicationServices.GetRequiredService<IScheduler>(),
@@ -38,16 +39,16 @@ public static class AbpSilkierQuartzExtensions
             RequestPath = new PathString($"{options.VirtualPathRoot}/Content"),
             EnableDefaultFiles = false,
             EnableDirectoryBrowsing = false,
-            FileProvider = new EmbeddedFileProvider(typeof(SilkierQuartz.SilkierQuartzOptions).Assembly, "SilkierQuartz.Content")
+            FileProvider = new EmbeddedFileProvider(typeof(SilkierQuartzOptions).Assembly, "SilkierQuartz.Content")
         };
 
         app.UseFileServer(fsOptions);
 
-        var services = SilkierQuartz.Services.Create(options, null);
+        var services = Services.Create(options, null);
 
         app.Use(async (context, next) =>
         {
-            context.Items[typeof(SilkierQuartz.Services)] = services;
+            context.Items[typeof(Services)] = services;
             await next.Invoke();
         });
 

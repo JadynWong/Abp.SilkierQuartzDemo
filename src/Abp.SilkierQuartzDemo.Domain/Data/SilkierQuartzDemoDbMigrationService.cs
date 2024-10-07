@@ -85,7 +85,7 @@ public class SilkierQuartzDemoDbMigrationService : ITransientDependency
         Logger.LogInformation("You can safely end this process...");
     }
 
-    private async Task MigrateDatabaseSchemaAsync(Tenant? tenant = null)
+    private async Task MigrateDatabaseSchemaAsync(Tenant tenant = null)
     {
         Logger.LogInformation(
             $"Migrating schema for {(tenant == null ? "host" : tenant.Name + " tenant")} database...");
@@ -96,7 +96,7 @@ public class SilkierQuartzDemoDbMigrationService : ITransientDependency
         }
     }
 
-    private async Task SeedDataAsync(Tenant? tenant = null)
+    private async Task SeedDataAsync(Tenant tenant = null)
     {
         Logger.LogInformation($"Executing {(tenant == null ? "host" : tenant.Name + " tenant")} database seed...");
 
@@ -127,10 +127,14 @@ public class SilkierQuartzDemoDbMigrationService : ITransientDependency
                 AddInitialMigration();
                 return true;
             }
-            else
+
+            if (!SqlServerMigrationFolderExists())
             {
-                return false;
+                AddSqlServerInitialMigration();
+                return true;
             }
+
+            return false;
         }
         catch (Exception e)
         {
@@ -138,6 +142,7 @@ public class SilkierQuartzDemoDbMigrationService : ITransientDependency
             return false;
         }
     }
+
 
     private bool DbMigrationsProjectExists()
     {
@@ -149,7 +154,14 @@ public class SilkierQuartzDemoDbMigrationService : ITransientDependency
     private bool MigrationsFolderExists()
     {
         var dbMigrationsProjectFolder = GetEntityFrameworkCoreProjectFolderPath();
-        return dbMigrationsProjectFolder != null && Directory.Exists(Path.Combine(dbMigrationsProjectFolder, "Migrations"));
+
+        return Directory.Exists(Path.Combine(dbMigrationsProjectFolder, "Migrations"));
+    }
+    private bool SqlServerMigrationFolderExists()
+    {
+        var dbMigrationsProjectFolder = GetSqlServerEntityFrameworkCoreProjectFolderPath();
+
+        return Directory.Exists(Path.Combine(dbMigrationsProjectFolder, "Migrations"));
     }
 
     private void AddInitialMigration()
@@ -183,8 +195,39 @@ public class SilkierQuartzDemoDbMigrationService : ITransientDependency
             throw new Exception("Couldn't run ABP CLI...");
         }
     }
+    private void AddSqlServerInitialMigration()
+    {
+        Logger.LogInformation("Creating initial migration...");
 
-    private string? GetEntityFrameworkCoreProjectFolderPath()
+        string argumentPrefix;
+        string fileName;
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            argumentPrefix = "-c";
+            fileName = "/bin/bash";
+        }
+        else
+        {
+            argumentPrefix = "/C";
+            fileName = "cmd.exe";
+        }
+
+        var procStartInfo = new ProcessStartInfo(fileName,
+            $"{argumentPrefix} \"abp create-migration-and-run-migrator \"{GetSqlServerEntityFrameworkCoreProjectFolderPath()}\"\""
+        );
+
+        try
+        {
+            Process.Start(procStartInfo);
+        }
+        catch (Exception)
+        {
+            throw new Exception("Couldn't run ABP CLI...");
+        }
+    }
+
+    private string GetEntityFrameworkCoreProjectFolderPath()
     {
         var slnDirectoryPath = GetSolutionDirectoryPath();
 
@@ -196,18 +239,33 @@ public class SilkierQuartzDemoDbMigrationService : ITransientDependency
         var srcDirectoryPath = Path.Combine(slnDirectoryPath, "src");
 
         return Directory.GetDirectories(srcDirectoryPath)
-            .FirstOrDefault(d => d.EndsWith(".EntityFrameworkCore"));
+            .FirstOrDefault(d => d.EndsWith(".EntityFrameworkCore"))!;
+    }
+    
+    private string GetSqlServerEntityFrameworkCoreProjectFolderPath()
+    {
+        var slnDirectoryPath = GetSolutionDirectoryPath();
+
+        if (slnDirectoryPath == null)
+        {
+            throw new Exception("Solution folder not found!");
+        }
+
+        var srcDirectoryPath = Path.Combine(slnDirectoryPath, "src");
+        
+        return Directory.GetDirectories(srcDirectoryPath)
+            .FirstOrDefault(d => d.Contains("SqlServer.EntityFrameworkCore"))!;
     }
 
-    private string? GetSolutionDirectoryPath()
+    private string GetSolutionDirectoryPath()
     {
         var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
 
-        while (currentDirectory != null && Directory.GetParent(currentDirectory.FullName) != null)
+        while (Directory.GetParent(currentDirectory.FullName) != null)
         {
             currentDirectory = Directory.GetParent(currentDirectory.FullName);
 
-            if (currentDirectory != null && Directory.GetFiles(currentDirectory.FullName).FirstOrDefault(f => f.EndsWith(".sln")) != null)
+            if (Directory.GetFiles(currentDirectory.FullName).FirstOrDefault(f => f.EndsWith(".sln")) != null)
             {
                 return currentDirectory.FullName;
             }

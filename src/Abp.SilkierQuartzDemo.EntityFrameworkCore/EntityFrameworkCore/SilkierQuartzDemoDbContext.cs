@@ -1,5 +1,7 @@
-﻿using Abp.SilkierQuartzDemo.Quartz;
+﻿using Abp.SilkierQuartzDemo.EntityTypeConfigurations;
+using Abp.SilkierQuartzDemo.SilkierQuartz;
 using Microsoft.EntityFrameworkCore;
+using System;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -59,7 +61,6 @@ public class SilkierQuartzDemoDbContext :
     public SilkierQuartzDemoDbContext(DbContextOptions<SilkierQuartzDemoDbContext> options)
         : base(options)
     {
-
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -85,29 +86,54 @@ public class SilkierQuartzDemoDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
+        
+        #region SilkierQuartz
+        var prefix = "Quartz";
+        var schema = "silkier";
 
-        builder.Entity<QuartzExecutionHistory>(b =>
-        {
-            b.ToTable("QuartzExecutionHistories", SilkierQuartzDemoConsts.DbSchema);
-            b.ConfigureByConvention();
+        builder.ApplyConfiguration(
+          new SilkierQuartzExecutionHistoryEntityTypeConfiguration(prefix, schema));
 
-            /* Configure more properties here */
-            b.Property(x => x.FireInstanceId).HasMaxLength(200);
-            b.Property(x => x.SchedulerInstanceId).HasMaxLength(200);
-            b.Property(x => x.SchedulerName).HasMaxLength(200);
-            b.Property(x => x.Job).HasMaxLength(300);
-            b.Property(x => x.Trigger).HasMaxLength(300);
+        builder.ApplyConfiguration(
+          new SilkierQuartzJobSummaryEntityTypeConfiguration(prefix, schema));
+        #endregion
+        
+        #region Quartz
+        var quartzPrefix = "qrtz_";
+        var quartzSchema = "quartz";
 
-            b.HasIndex(x => x.FireInstanceId);
-        });
+        builder.ApplyConfiguration(
+          new QuartzJobDetailEntityTypeConfiguration(quartzPrefix, quartzSchema));
 
-        builder.Entity<QuartzJobSummary>(b =>
-        {
-            b.ToTable("QuartzJobSummares", SilkierQuartzDemoConsts.DbSchema);
-            b.ConfigureByConvention();
+        builder.ApplyConfiguration(
+          new QuartzTriggerEntityTypeConfiguration(quartzPrefix, quartzSchema));
 
-            /* Configure more properties here */
-            b.Property(x => x.SchedulerName).HasMaxLength(200);
-        });
+        builder.ApplyConfiguration(
+          new QuartzSimpleTriggerEntityTypeConfiguration(quartzPrefix, quartzSchema));
+
+        builder.ApplyConfiguration(
+          new QuartzSimplePropertyTriggerEntityTypeConfiguration(quartzPrefix, quartzSchema));
+
+        builder.ApplyConfiguration(
+          new QuartzCronTriggerEntityTypeConfiguration(quartzPrefix, quartzSchema));
+
+        builder.ApplyConfiguration(
+          new QuartzBlobTriggerEntityTypeConfiguration(quartzPrefix, quartzSchema));
+
+        builder.ApplyConfiguration(
+          new QuartzCalendarEntityTypeConfiguration(quartzPrefix, quartzSchema));
+
+        builder.ApplyConfiguration(
+          new QuartzPausedTriggerGroupEntityTypeConfiguration(quartzPrefix, quartzSchema));
+
+        builder.ApplyConfiguration(
+          new QuartzFiredTriggerEntityTypeConfiguration(quartzPrefix, quartzSchema));
+
+        builder.ApplyConfiguration(
+          new QuartzSchedulerStateEntityTypeConfiguration(quartzPrefix, quartzSchema));
+
+        builder.ApplyConfiguration(
+          new QuartzLockEntityTypeConfiguration(quartzPrefix, quartzSchema));
+        #endregion
     }
 }

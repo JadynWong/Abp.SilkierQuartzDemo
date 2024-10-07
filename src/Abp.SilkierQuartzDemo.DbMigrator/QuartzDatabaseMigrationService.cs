@@ -14,23 +14,34 @@ namespace Abp.SilkierQuartzDemo.DbMigrator;
 
 public partial class QuartzDatabaseMigrationService : IDataSeedContributor, ITransientDependency
 {
+    protected IConfiguration Configuration { get; }
+
+
+    public QuartzDatabaseMigrationService(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public virtual async Task SeedAsync(DataSeedContext context)
+    {
+        //await new QuartzDatabaseSqlServerMigrationService(Configuration).MigrateAsync();
+        await Task.CompletedTask;
+    }
+}
+
+public partial class QuartzDatabaseSqlServerMigrationService
+{
+    public QuartzDatabaseSqlServerMigrationService(IConfiguration configuration)
+    {
+        Configuration = configuration;
+        SqlConnectionString = configuration.GetConnectionString("SqlServer")!;
+    }
+    
     protected string SqlConnectionString { get; }
 
     protected IConfiguration Configuration { get; }
 
     private const string QuartzTableSqlFileName = "quartz_table_sqlserver.sql";
-
-    public QuartzDatabaseMigrationService(IConfiguration configuration)
-    {
-        Configuration = configuration;
-        SqlConnectionString = configuration.GetConnectionString("Default")!;
-    }
-
-    public virtual async Task SeedAsync(DataSeedContext context)
-    {
-        await MigrateAsync();
-    }
-
     public virtual async Task MigrateAsync()
     {
         await CreateTablesAsync();
@@ -308,4 +319,5 @@ public partial class QuartzDatabaseMigrationService : IDataSeedContributor, ITra
 
     [GeneratedRegex("[^\r\n]")]
     private static partial Regex EverythingExceptNewLines();
+
 }

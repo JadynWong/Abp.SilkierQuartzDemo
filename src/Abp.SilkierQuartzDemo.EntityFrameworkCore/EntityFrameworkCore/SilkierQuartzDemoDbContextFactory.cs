@@ -17,8 +17,7 @@ public class SilkierQuartzDemoDbContextFactory : IDesignTimeDbContextFactory<Sil
         var configuration = BuildConfiguration();
 
         var builder = new DbContextOptionsBuilder<SilkierQuartzDemoDbContext>()
-            .UseSqlServer(configuration.GetConnectionString("Default"));
-
+                .UseNpgsql(configuration.GetConnectionString("Default"));
         return new SilkierQuartzDemoDbContext(builder.Options);
     }
 

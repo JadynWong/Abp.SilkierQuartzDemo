@@ -29,12 +29,14 @@
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Volo.Abp.Autofac" Version="8.3.1" />
     <ProjectReference Include="..\Abp.SilkierQuartzDemo.Application.Contracts\Abp.SilkierQuartzDemo.Application.Contracts.csproj" />
     <ProjectReference Include="..\Abp.SilkierQuartzDemo.EntityFrameworkCore\Abp.SilkierQuartzDemo.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Abp.SilkierQuartzDemo.SqlServer.EntityFrameworkCore\Abp.SilkierQuartzDemo.SqlServer.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
